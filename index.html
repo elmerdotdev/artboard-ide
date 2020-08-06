@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elmer's Art Board - An offline Chromium-based IDE with Live Preview</title>
+    <link rel="icon" href="https://elmer.dev/blog/wp-content/uploads/2020/06/cropped-EB-logo-32x32.png" sizes="32x32" />
+    <link rel="icon" href="https://elmer.dev/blog/wp-content/uploads/2020/06/cropped-EB-logo-192x192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="https://elmer.dev/blog/wp-content/uploads/2020/06/cropped-EB-logo-180x180.png" />
+    <meta name="msapplication-TileImage" content="https://elmer.dev/blog/wp-content/uploads/2020/06/cropped-EB-logo-270x270.png" />
+    
+    <!-- jQuery 2.2.4 from Google CDN -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Crypto JS -->
+    <script src="js/crypto-js/rollups/aes.js"></script>
+    <!-- Beautify Web - HTML, CSS, JS -->
+    <script src="js/beautify-web/beautify-html.js"></script>
+    <script src="js/beautify-web/beautify-css.js"></script>
+    <script src="js/beautify-web/beautify.js"></script>
+    <!-- Ace Editor -->
+    <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Together -->
+    <!-- <script src="js/togetherjs-min.js"></script> -->
+    <!-- JSTinker Scripts -->
+    <script src="js/app.js"></script>
+    <!-- Bootstrap Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Bootstrap Optional theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <!-- JSTinker Style -->
+    <link rel="stylesheet" href="css/app.css" type="text/css">
+    <!-- Bootstrap Latest compiled and minified JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#toolbar">
+                <span class="sr-only">Toggle toolbar</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://elmer.dev" target="_blank"><img src="img/lame-224x224.jpg"> <span>Elmer's Art Board</span></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="toolbar">
+            <ul class="nav navbar-nav">
+                <li id="btnRun"><a href=""><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Draw</a></li>
+                <li id="btnTidyUp"><a href=""><span class="glyphicon glyphicon-flash" aria-hidden="true"></span> Tidy</a></li>
+                <li id="btnSettings"><a href=""><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Settings</a></li>
+                <li id="btnTips"><a href=""><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Tips</a></li>
+                <!-- <li id="btnTogether"><a href=""><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> Collaborate</a></li> -->
+            </ul>
+
+            <div class="draw_switch">
+                <span>Auto-Draw</span>
+                <label class="switch">
+                  <input type="checkbox" class="auto_draw">
+                  <div class="slider round"></div>
+                </label>
+            </div>
+
+            <div class="grid_switch">
+                <span>Grid Lines</span>
+                <label class="switch">
+                  <input type="checkbox" class="grid_check" checked>
+                  <div class="slider round"></div>
+                </label>
+            </div>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" style="display: none;">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <!-- Frameworks & Extensions -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Frameworks & Extensions
+                        </a>
+                    </h4>
+                </div>
+                <p style="padding: 10px 15px 0;"><strong>(Requires internet connection to load the JS libraries. There's just too many files that's why they're not included in the package)</strong></p>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <div class="dropdown">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                No-Library (pure JS)
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu1" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="presentation" class="dropdown-header">jQuery</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery Compat (edge)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery (edge)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 3.1.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 2.1.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 2.0.2</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.11.3</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.10.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.9.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.8.3</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.7.2</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jQuery 1.6.4</a></li>
+
+                                <li role="presentation" class="dropdown-header">Prototype</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Prototype 1.7.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Prototype 1.6.1.0</a></li>
+
+                                <li role="presentation" class="dropdown-header">YUI</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.17.2</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.16.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.14.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.10.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.8.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.7.3</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.6.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 3.5.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">YUI 2.8.0r4</a></li>
+
+                                <li role="presentation" class="dropdown-header">No-Library</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">No-Library (pure JS)</a></li>
+
+                                <li role="presentation" class="dropdown-header">Dojo</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo (nightly)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.10.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.9.4</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.8.7</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.7.6</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.6.2</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Dojo 1.5.3</a></li>
+
+                                <li role="presentation" class="dropdown-header">Processing</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Processing.js 1.4.7</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Processing.js 1.4.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Processing.js 1.3.6</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Processing.js 1.2.3</a></li>
+
+                                <li role="presentation" class="dropdown-header">ExtJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">ExtJS 4.2.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">ExtJS 4.1.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">ExtJS 4.1.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">ExtJS 3.4.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">ExtJS 3.1.0</a></li>
+
+                                <li role="presentation" class="dropdown-header">Raphael</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Raphael 2.1.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Raphael 1.5.2 (min)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Raphael 1.4</a></li>
+
+                                <li role="presentation" class="dropdown-header">RightJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">RightJS 2.3.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">RightJS 2.1.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Three.js</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Three.js r54</a></li>
+
+                                <li role="presentation" class="dropdown-header">Zepto</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Zepto 1.0rc1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Enyo</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo (nightly)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo 2.5.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo 2.4.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo 2.2.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo 2.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Enyo 2.0.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Shipyard</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Shipyard (nightly)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Shipyard 0.2</a></li>
+
+                                <li role="presentation" class="dropdown-header">Knockout.js</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Knockout.js 3.0.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Knockout.js 2.3.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Knockout.js 2.2.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Knockout.js 2.1.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Knockout.js 2.0.0</a></li>
+
+                                <li role="presentation" class="dropdown-header">The X Toolkit</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">The X Toolkit edge</a></li>
+
+                                <li role="presentation" class="dropdown-header">AngularJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">AngularJS 1.2.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">AngularJS 1.1.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Ember</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Ember 1.3.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Underscore</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Underscore 1.4.4</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Underscore 1.4.3</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Underscore 1.3.3</a></li>
+
+                                <li role="presentation" class="dropdown-header">Bonsai</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Bonsai 0.4.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">KineticJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">KineticJS 4.3.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">KineticJS 4.0.5</a></li>
+
+                                <li role="presentation" class="dropdown-header">FabricJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">FabricJS 1.4.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">FabricJS 1.2.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">FabricJS 0.9</a></li>
+
+                                <li role="presentation" class="dropdown-header">qooxdoo</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">qooxdoo 2.1</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">qooxdoo 2.0.3</a></li>
+
+                                <li role="presentation" class="dropdown-header">D3</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">D3 3.0.4</a></li>
+
+                                <li role="presentation" class="dropdown-header">CreateJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">CreateJS 2013.09.25</a></li>
+
+                                <li role="presentation" class="dropdown-header">WebApp Install</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">WebApp Install 0.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Thorax</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Thorax 2.0.0rc6</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Thorax 2.0.0rc3</a></li>
+
+                                <li role="presentation" class="dropdown-header">Paper.js</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Paper.js 0.22</a></li>
+
+                                <li role="presentation" class="dropdown-header">React</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">React 0.9.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">React 0.8.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">React 0.4.0</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">React 0.3.2</a></li>
+
+                                <li role="presentation" class="dropdown-header">svg.js</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">svg.js 0.x (latest)</a></li>
+
+                                <li role="presentation" class="dropdown-header">Minified</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Minified 1.0 beta1</a></li>
+
+                                <li role="presentation" class="dropdown-header">jTypes</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">jTypes 2.1.0</a></li>
+
+                                <li role="presentation" class="dropdown-header">Lo-Dash</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Lo-Dash 2.2.1</a></li>
+
+                                <li role="presentation" class="dropdown-header">Brick</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Brick edge</a></li>
+
+                                <li role="presentation" class="dropdown-header">RactiveJS</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">RactiveJS Latest</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">RactiveJS Edge</a></li>
+
+                                <li role="presentation" class="dropdown-header">Vue</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Vue (edge)</a></li>
+
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">Vue 0.11.0</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="dropdown">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+                                onLoad
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu2" role="menu" aria-labelledby="dropdownMenu2">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">onLoad</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">onDomReady</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">No wrap - in head</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">No wrap - in body</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tinker Options -->
+            <div class="panel panel-default">
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+                        <input type="text" placeholder="Name your art board">
+                        <textarea placeholder="Description"></textarea>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"></input><span class="chk_lbl">Normalize css</span>
+                            </label>
+                        </div>
+                        <p>Body tag</p>
+                        <input type="text">
+                        <p>DTD</p>
+                        <div class="dropdown">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
+                                HTML 5
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu3" role="menu" aria-labelledby="dropdownMenu3">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">XHTML 1.0 Strict</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">XHTML 1.0 Transitional</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">HTML 5</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">HTML 4.01 Strict</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">HTML 4.01 Transitional</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">HTML 4.01 Frameset</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        <p>Framework script attribute</p>
+                        <input type="text" placeholder="ie. data-type=''">
+                    </div>
+                </div>
+            </div>
+            <!-- External Resources -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                            External Resources
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                    <div class="panel-body">
+                        <input type="text" class="ext_res" placeholder="JavaScript/CSS URI">
+                        <button type="button" class="btn btn-default add">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Languages -->
+            <div class="panel panel-default">
+                <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                    <div class="panel-body">
+                        <div class="dropdown langcontainer">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle langbutton" type="button" id="dropdownMenu4" data-toggle="dropdown" aria-expanded="true">
+                                HTML
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu4" role="menu" aria-labelledby="dropdownMenu4">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">HTML</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        <div class="dropdown langcontainer langright">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle langbutton" type="button" id="dropdownMenu5" data-toggle="dropdown" aria-expanded="true">
+                                CSS
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu5" role="menu" aria-labelledby="dropdownMenu5">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">CSS</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">SCSS</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        <div class="dropdown langcontainer">
+                            <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle langbutton" type="button" id="dropdownMenu6" data-toggle="dropdown" aria-expanded="true">
+                                JavaScript
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu" id="dropdownMenu6" role="menu" aria-labelledby="dropdownMenu6">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">JavaScript</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">CoffeeScript</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="">JavaScript 1.7</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        <div class="dropdown langcontainer langright">
+                            <div class="btn-group">
+                            <button class="btn btn-default langbutton" type="button" id="dropdownMenu7" data-toggle="dropdown" aria-expanded="true">
+                                Results
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Legal, Credits and Links -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingSix">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+                            About Elmer's Art Board
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+                    <div class="panel-body">
+                        <p>Art Board is an offline Chromium-based IDE with Live Preview. Perfect for those who don't have internet but want to create CSS images with a JSFiddle/CodePen-like environment.</p>
+                        <p>Maintained and improved by <a href="http://elmer.dev">Elmer Balbin Jr.</a> Personal improvements implemented include:<br />
+                        - Layout redesign<br />
+                        - Auto-Draw feature<br />
+                        - Grid lines for guide<br />
+                        - Save & Load functionality</p>
+                        <p>Based on <a title="John's homepage" href="http://johncipponeri.github.io/" target="_blank" rel="nofollow">John Cipponeri</a>'s JSTinker, an open source clone to <a href="http://jsfiddle.net" target="_new">JSFiddle</a>.</p>
+                        <p><strong>License</strong></p>
+                        <p>All code belongs to the poster and no license is enforced.</p>
+                        <p>Elmer's Art Board or its authors are not responsible or liable for any loss or damage of any kind during the usage of provided code.</p>
+                        <p>See <a href="LICENSE.txt">MIT License</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /sidebar -->
+
+    <!-- Tips -->
+    <div id="tips" style="display: none; padding: 12px;">
+    	<p><strong>Grid not aligning?</strong><br />Add this code to the CSS panel:<br />
+        <blockquote>
+        body {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;margin: 0;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;padding: 0;<br />
+        }
+        </blockquote>
+        </p>
+    </div>
+
+    <div class="editors">
+
+    	<div class="container-fluid control-bar">
+    		<div class="width50 floatleft">
+		        <input type="text" id="inputFileNameToSaveAs" value="NewArtBoard" placeholder="Give me a filename please" style="width: 200px; margin-right: 5px;" class="form-control floatleft">
+		        <button id="save_html" class="save_btn btn btn-primary">Save HTML</button>
+		        <button id="save_css" class="save_btn btn btn-success">Save CSS</button>
+		        <button id="save_js" class="save_btn btn btn-warning">Save JS</button>
+		        <textarea id="magicbox" style="display: none;"></textarea>
+		    </div>
+		    <div class="width50 floatright" style="text-align: right;">
+		        <button class="btn btn-primary floatright" onclick="loadFileAsText(document.getElementById('fileToLoad').files)">Load selected files</button>
+
+		        <div class="input-group">
+	                <label class="input-group-btn">
+	                    <span class="btn btn-primary">
+	                        Browse&hellip; <input type="file" id="fileToLoad" style="display: none;" multiple>
+	                    </span>
+	                </label>
+	                <input type="text" class="form-control" readonly>
+	            </div>
+        	</div>
+        </div>
+
+        <div class="top">
+            <div class="halfEditorContainer">
+                <!-- HTML Editor -->
+                <div>
+                    <div class="editor" id="html-editor">&lt;div class="canvas"&gt;
+    &lt;div>&lt;/div&gt;
+&lt;/div&gt;</div>
+                </div>
+                <!-- JS Editor -->
+                <div>
+                    <div class="editor" id="js-editor"></div>
+                </div>
+            </div>
+            <!-- CSS Editor -->
+            <div class="editorContainer">
+                <div class="editor" id="css-editor">body {
+    margin: 0;
+    padding: 0;
+}
+
+.canvas {
+    width: 100vw;
+    height: 100vw;
+    max-width: 300px;
+    max-height: 300px;
+    background-color: #FFF;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}</div>
+            </div>
+            <!-- Preview -->
+            <div class="editorContainer previewContainer">
+                <div class="previewWrapper">
+                    <iframe class="editor" id="preview" name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin" frameborder="0">
+                        #document
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+        </div>
+    </div>
+
+    </div>
+    
+    <!-- Set Editor Modes -->
+    <script>
+        ace.require("ace/ext/language_tools");
+
+        var htmlEditor = ace.edit("html-editor");
+        htmlEditor.setTheme("ace/theme/crimson-editor");
+        htmlEditor.getSession().setMode("ace/mode/html");
+        htmlEditor.setOptions({
+            enableBasicAutocompletion: true
+        });
+
+        var cssEditor = ace.edit("css-editor");
+        cssEditor.setTheme("ace/theme/crimson-editor");
+        cssEditor.getSession().setMode("ace/mode/css");
+        cssEditor.setOptions({
+            enableBasicAutocompletion: true
+        });
+
+        var jsEditor = ace.edit("js-editor");
+        jsEditor.setTheme("ace/theme/crimson-editor");
+        jsEditor.getSession().setMode("ace/mode/javascript");
+        jsEditor.setOptions({
+            enableBasicAutocompletion: true
+        });
+    </script>
+
+    <script>
+    function saveTextAsFile(id)
+    {
+        var textToSave = document.getElementById("magicbox").value;
+        if (id == "html"){
+        	var textToSaveAsBlob = new Blob([textToSave], {type:"text/html"});
+        } else if (id == "css"){
+        	var textToSaveAsBlob = new Blob([textToSave], {type:"text/css"});
+        } else if (id == "js"){
+        	var textToSaveAsBlob = new Blob([textToSave], {type:"application/javascript"});
+        } else {
+        	var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+        }
+        var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+        var fileNameToSaveAs = 'ab_' + document.getElementById("inputFileNameToSaveAs").value;
+    	
+    	if (id == "js"){
+    		var fileNameToSaveAs = 'ab_' + document.getElementById("inputFileNameToSaveAs").value + '.js';
+        } 
+
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = textToSaveAsURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+     
+        downloadLink.click();
+    }
+     
+    function destroyClickedElement(event)
+    {
+        document.body.removeChild(event.target);
+    }
+     
+    function loadFileAsText(files)
+    {
+		function setupReader(file) {
+		    var name = file.name;
+		    var reader = new FileReader();  
+		    reader.onload = function(e) {  
+		        // get file content  
+		       	var textFromFileLoaded = e.target.result;
+	            document.getElementById("magicbox").value = textFromFileLoaded;
+
+	            if (name.indexOf(".html") >= 0 || name.indexOf(".htm") >= 0){
+	                htmlEditor.setValue(document.getElementById("magicbox").value, 1);
+	            } else if (name.indexOf(".css") >= 0){
+	                cssEditor.setValue(document.getElementById("magicbox").value, 1);
+	            } else if (name.indexOf(".js") >= 0){
+	                jsEditor.setValue(document.getElementById("magicbox").value, 1);
+	            }
+		    }
+		    reader.readAsText(file, "UTF-8");
+		}
+
+	    for (var i = 0; i < files.length; i++) {
+		    setupReader(files[i]);
+		    console.log(i)
+		}
+    }
+    </script>
+    
+</body>
+</html>
